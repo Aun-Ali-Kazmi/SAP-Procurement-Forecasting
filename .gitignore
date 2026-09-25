@@ -12,10 +12,9 @@ Thumbs.db
 .DS_Store
 ~$*
 
-# Confidential SAP data - never commit (see README "Data")
+# Raw data
 data/raw/*
-!data/raw/README.md
-data/processed/
+!data/raw/final_set.xlsx
 
 # Training artefacts of the deep-learning libraries
 lightning_logs/
