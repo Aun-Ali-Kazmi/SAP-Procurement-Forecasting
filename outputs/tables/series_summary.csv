@@ -1,0 +1,4 @@
+material,first_month,last_month,months,zero_months,mean_spend_m,max_spend_m,ADI,CV2,demand_class
+HOSE Pipe & Accessories,2020-02-01,2024-11-01,58,14,0.636,4.5103,1.318,1.555,Erratic
+O-RING,2020-02-01,2024-11-01,58,8,0.1529,1.4001,1.16,2.618,Erratic
+RING SEAL,2023-10-01,2024-11-01,14,0,6.4979,10.9573,1.0,0.189,Smooth

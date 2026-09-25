@@ -1,0 +1,11 @@
+,value
+rows_read,2790
+rows_empty,232
+rows_deleted_in_sap,5
+rows_invalid_date,0
+rows_invalid_or_negative_value,0
+rows_exact_duplicates,0
+rows_kept,2553
+date_min,2020-02-12
+date_max,2024-12-10
+currencies,"GBP, NPL"

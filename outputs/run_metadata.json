@@ -1,0 +1,89 @@
+{
+  "run_started": "2026-09-25T02:47:52",
+  "run_finished": "2026-09-25T04:01:12",
+  "python": "3.11.0",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "packages": {
+    "numpy": "1.26.4",
+    "pandas": "2.3.3",
+    "statsmodels": "0.15.0",
+    "scikit-learn": "1.9.1",
+    "lightgbm": "4.7.0",
+    "mlforecast": "1.1.0",
+    "autots": "1.0.4",
+    "neuralprophet": "0.9.0",
+    "neuralforecast": "3.2.2",
+    "darts": "0.47.0",
+    "torch": "2.14.0+cpu"
+  },
+  "data_file_sha256": "30b282092d9f4e4084a24fdb9da758cabec8e4a09cacab8d958c4907a130b311",
+  "data_validation": {
+    "rows_read": 2790,
+    "rows_empty": 232,
+    "rows_deleted_in_sap": 5,
+    "rows_invalid_date": 0,
+    "rows_invalid_or_negative_value": 0,
+    "rows_exact_duplicates": 0,
+    "rows_kept": 2553,
+    "date_min": "2020-02-12",
+    "date_max": "2024-12-10",
+    "currencies": "GBP, NPL"
+  },
+  "arguments": {
+    "config": null,
+    "fresh": false,
+    "quick": false,
+    "models": null,
+    "skip_future": false
+  },
+  "config": {
+    "data": {
+      "path": "C:\\Users\\Lenovo\\OneDrive\\Desktop\\testing thesis\\data\\raw\\final_set.xlsx",
+      "sheet": "Dataset for Budget forecast (2)",
+      "drop_deleted_items": true
+    },
+    "series": {
+      "frequency": "MS",
+      "scale_factor": 1000000,
+      "materials": {
+        "HOSE Pipe & Accessories": "130005647",
+        "O-RING": "140003543",
+        "RING SEAL": "140007225"
+      }
+    },
+    "evaluation": {
+      "horizon": 3,
+      "max_origins": 6,
+      "min_train_months": 8,
+      "interval_level": 80,
+      "seeds": [
+        1,
+        2,
+        3
+      ]
+    },
+    "models": {
+      "enabled": [
+        "Naive",
+        "CrostonSBA",
+        "ETS",
+        "ARIMA",
+        "AutoTS",
+        "MLForecast",
+        "NeuralProphet",
+        "NBEATSx",
+        "NHITS",
+        "TCN"
+      ],
+      "deep": {
+        "max_steps": 300,
+        "max_input_size": 12,
+        "tcn_epochs": 200,
+        "neuralprophet_epochs": 200
+      }
+    },
+    "output": {
+      "dir": "outputs"
+    }
+  }
+}

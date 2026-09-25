@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-lg-5">
+    <div class="card"><div class="card-body">
+      <h5>Create a forecast</h5>
+      <form action="/forecast" method="get">
+        <label class="form-label mt-2">Material</label>
+        <select name="material" id="material" class="form-select" onchange="updatePlants()">
+          {% for m in materials %}<option value="{{ m }}">{{ m }}</option>{% endfor %}
+        </select>
+        <label class="form-label mt-3">Plant</label>
+        <select name="plant" id="plant" class="form-select"></select>
+        <label class="form-label mt-3">Model</label>
+        <select name="model" class="form-select">
+          <option value="best" selected>Best model for this material (from backtest)</option>
+          {% for m in models %}<option value="{{ m }}">{{ m }} ({{ families[m] }})</option>{% endfor %}
+        </select>
+        <label class="form-label mt-3">Horizon (months)</label>
+        <input type="number" name="horizon" value="{{ default_h }}" min="1" max="12" class="form-control">
+        <button class="btn btn-primary mt-4 w-100" type="submit">Forecast</button>
+        <p class="text-muted small mt-2 mb-0">Deep-learning models are trained on request and can take up to a minute.</p>
+      </form>
+    </div></div>
+
+    <div class="card"><div class="card-body">
+      <h5>Data validation</h5>
+      <table class="table table-sm mb-0">
+        {% for k, v in report.items() %}<tr><td>{{ k.replace('_', ' ') }}</td><td class="text-end">{{ v }}</td></tr>{% endfor %}
+      </table>
+    </div></div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="card"><div class="card-body">
+      <h5>Analysed materials</h5>
+      {% if summary %}
+      <table class="table table-sm">
+        <thead><tr><th>Material</th><th>Months</th><th>Zero months</th><th>Mean (m)</th><th>Demand class</th></tr></thead>
+        <tbody>{% for r in summary %}
+          <tr><td>{{ r.material }}</td><td>{{ r.months }}</td><td>{{ r.zero_months }}</td><td>{{ r.mean_spend_m }}</td><td>{{ r.demand_class }}</td></tr>
+        {% endfor %}</tbody>
+      </table>
+      {% else %}<p class="text-muted">Run <code>python run_pipeline.py</code> to populate this panel.</p>{% endif %}
+    </div></div>
+
+    <div class="card"><div class="card-body">
+      <h5>Model leaderboard (rolling-origin backtest, all materials)</h5>
+      {% if ranking %}
+      <table class="table table-sm">
+        <thead><tr><th>#</th><th>Model</th><th>Family</th><th>Mean MASE</th><th>Mean rank</th><th>Beats naive</th><th>80% PI coverage</th></tr></thead>
+        <tbody>{% for r in ranking %}
+          <tr><td>{{ loop.index }}</td><td>{{ r.model }}</td><td>{{ r.Family }}</td><td>{{ r.mean_MASE }}</td>
+              <td>{{ r.mean_rank }}</td><td>{{ (r.share_folds_beating_naive * 100) | round(0) | int }}%</td>
+              <td>{% if r.PICP_80 == r.PICP_80 %}{{ (r.PICP_80 * 100) | round(0) | int }}%{% else %}n/a{% endif %}</td></tr>
+        {% endfor %}</tbody>
+      </table>
+      <p class="text-muted small mb-0">MASE &lt; 1 means more accurate than the naive in-sample benchmark. Lower rank is better.</p>
+      {% else %}<p class="text-muted">Run <code>python run_pipeline.py</code> to populate this panel.</p>{% endif %}
+    </div></div>
+  </div>
+</div>
+
+<script>
+  const PLANTS = {{ plants | tojson }};
+  function updatePlants() {
+    const m = document.getElementById('material').value;
+    const sel = document.getElementById('plant');
+    sel.innerHTML = '<option value="">All plants</option>' +
+      PLANTS[m].map(p => `<option value="${p}">${p}</option>`).join('');
+  }
+  updatePlants();
+</script>
+{% endblock %}

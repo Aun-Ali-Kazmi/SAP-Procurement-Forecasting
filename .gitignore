@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# IDE / OS
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store
+~$*
+
+# Confidential SAP data - never commit (see README "Data")
+data/raw/*
+!data/raw/README.md
+data/processed/
+
+# Training artefacts of the deep-learning libraries
+lightning_logs/
+checkpoints/
+*.ckpt
+outputs/quick/
+outputs/logs/
+
+# outputs/tables and outputs/figures ARE committed: they are the evidence
+# behind the numbers and figures in the thesis.
+
+# Personal notes on updating the thesis text
+THESIS_UPDATE_NOTES.md

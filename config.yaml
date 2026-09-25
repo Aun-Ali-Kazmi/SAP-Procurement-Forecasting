@@ -1,0 +1,53 @@
+# ---------------------------------------------------------------------------
+# Configuration for the SAP S/4HANA procurement spend forecasting pipeline.
+# Every number reported in the thesis is produced from this file by
+#   python run_pipeline.py
+# ---------------------------------------------------------------------------
+
+data:
+  path: data/raw/final_set.xlsx
+  sheet: "Dataset for Budget forecast (2)"
+  # Purchase-order lines flagged for deletion in SAP are not real spend.
+  drop_deleted_items: true
+
+series:
+  frequency: MS            # monthly, month-start timestamps
+  scale_factor: 1000000    # spend is modelled in millions
+  # Materials analysed in the thesis (SAP material number -> display name).
+  materials:
+    "HOSE Pipe & Accessories": "130005647"
+    "O-RING": "140003543"
+    "RING SEAL": "140007225"
+
+evaluation:
+  horizon: 3               # months ahead (operational procurement horizon)
+  # Rolling-origin (expanding window) backtest. The final fold is the
+  # classic hold-out: train on everything except the last `horizon` months.
+  max_origins: 6
+  min_train_months: 8
+  interval_level: 80       # prediction-interval level used for PICP
+  # Deep-learning models are stochastic: each is trained once per seed and
+  # the forecasts are averaged, so results do not hinge on one lucky seed.
+  seeds: [1, 2, 3]
+
+models:
+  # Order here is the order used in tables and charts.
+  enabled:
+    - Naive
+    - CrostonSBA
+    - ETS
+    - ARIMA
+    - AutoTS
+    - MLForecast
+    - NeuralProphet
+    - NBEATSx
+    - NHITS
+    - TCN
+  deep:
+    max_steps: 300         # NBEATSx / NHITS optimisation steps
+    max_input_size: 12     # look-back window (shrunk automatically for short series)
+    tcn_epochs: 200
+    neuralprophet_epochs: 200
+
+output:
+  dir: outputs

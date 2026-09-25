@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ material }} - {{ model }}{% endblock %}
+{% block content %}
+<a href="/" class="small">&larr; back</a>
+<h3 class="mt-2">{{ material }} <small class="text-muted">{{ plant }}</small></h3>
+<p class="text-muted">{{ model }} ({{ family }}{% if info %}, {{ info }}{% endif %}) - next {{ h }} month(s)</p>
+{% if note %}<div class="alert alert-warning">{{ note }}</div>{% endif %}
+
+<div class="row">
+  <div class="col-md-3"><div class="card"><div class="card-body">
+    <div class="kpi-label">History</div><div class="kpi">{{ overview.months }} months</div>
+    <div class="small text-muted">{{ overview.first_month }} to {{ overview.last_month }}</div></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">
+    <div class="kpi-label">Zero-spend months</div><div class="kpi">{{ overview.zero_months }}</div>
+    <div class="small text-muted">demand class: {{ overview.demand_class }}</div></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">
+    <div class="kpi-label">Backtest MAE (this model)</div>
+    <div class="kpi">{% if reliability %}{{ reliability.MAE }}{% else %}n/a{% endif %}</div>
+    <div class="small text-muted">millions, averaged over {% if reliability %}{{ reliability.folds }}{% else %}0{% endif %} folds</div></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">
+    <div class="kpi-label">Backtest MASE</div>
+    <div class="kpi">{% if reliability %}{{ reliability.MASE }}{% else %}n/a{% endif %}</div>
+    <div class="small text-muted">&lt; 1 = better than naive</div></div></div></div>
+</div>
+{% if not backtest_on_all_plants %}
+<p class="small text-muted">Backtest accuracy was measured on the all-plants series of this material.</p>
+{% endif %}
+
+<div class="card"><div class="card-body">
+  <div id="plot" style="height:430px"></div>
+</div></div>
+
+<div class="row">
+  <div class="col-lg-6">
+    <div class="card"><div class="card-body">
+      <h5>Forecast</h5>
+      <table class="table table-sm">
+        <thead><tr>{% for c in columns %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+        <tbody>{% for r in rows %}<tr>{% for c in columns %}
+          <td>{% if r[c] == r[c] %}{{ '{:,.4f}'.format(r[c]) if r[c] is number else r[c] }}{% else %}n/a{% endif %}</td>
+        {% endfor %}</tr>{% endfor %}</tbody>
+      </table>
+      {% if not has_interval %}
+      <p class="small text-muted">{{ model }} has no native uncertainty estimate for this series, so no prediction interval is shown.</p>
+      {% endif %}
+      <a class="btn btn-outline-primary btn-sm" href="/download?{{ query }}">Download CSV</a>
+    </div></div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card"><div class="card-body">
+      <h5>Model comparison for {{ material }} (backtest)</h5>
+      {% if board %}
+      <table class="table table-sm">
+        <thead><tr><th>Model</th><th>MAE</th><th>MASE</th><th>sMAPE %</th><th>PI coverage</th></tr></thead>
+        <tbody>{% for r in board %}
+          <tr class="{% if r.model == model %}highlight{% endif %}">
+            <td>{{ r.model }}</td><td>{{ r.MAE }}</td><td>{{ r.MASE }}</td><td>{{ r.sMAPE }}</td>
+            <td>{% if r.PICP == r.PICP %}{{ (r.PICP * 100) | round(0) | int }}%{% else %}n/a{% endif %}</td></tr>
+        {% endfor %}</tbody>
+      </table>
+      {% else %}<p class="text-muted">Run <code>python run_pipeline.py</code> first.</p>{% endif %}
+    </div></div>
+  </div>
+</div>
+
+<script>
+  Plotly.newPlot('plot', {{ plot_data | safe }}, {
+    margin: {t: 20, r: 10, l: 60, b: 40},
+    yaxis: {title: 'Monthly spend (millions)', rangemode: 'tozero'},
+    legend: {orientation: 'h', y: -0.15},
+    hovermode: 'x unified'
+  }, {responsive: true});
+</script>
+{% endblock %}
